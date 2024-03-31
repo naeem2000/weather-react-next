@@ -1,95 +1,64 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import { Weather } from '@/modules/modules';
+import React, { useState } from 'react';
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const api = {
+		key: 'e4a9403a5ec813396dbfbdefa995c411',
+		base: 'https://api.openweathermap.org/data/2.5/',
+	};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	const [query, setQuery] = useState<string>('');
+	const [weather, setWeather] = useState({});
+	const [days, setDays] = useState([]);
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+	const search = (e: any) => {
+		if (e.key === 'Enter') {
+			fetch(`${api.base}forecast?q=${query}&units=metric&APPID=${api.key}`)
+				.then((res) => res.json())
+				.then((result) => {
+					setWeather(result);
+					setDays(result.list.splice(0, 5));
+					setQuery('');
+				});
+		}
+	};
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+	console.log(weather);
+	console.log(days);
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+	return (
+		<>
+			<main>
+				<div className='search-box'>
+					<input
+						type='text'
+						className='search-bar'
+						placeholder='Search...'
+						onChange={(e) => setQuery(e.target.value)}
+						value={query}
+						onKeyDown={search}
+					/>
+				</div>
+				{typeof (weather as any).main != 'undefined' ? (
+					<div>
+						<div className='location-box'>
+							<div className='location'>
+								{(weather as any).name}, {(weather as any).sys.country}
+							</div>
+						</div>
+						<div className='weather-box'>
+							<div className='temp'>
+								{Math.round((weather as any).main.temp)}°c
+							</div>
+							<div className='weather'>{(weather as any).weather[0].main}</div>
+						</div>
+					</div>
+				) : (
+					'No weather selected'
+				)}
+			</main>
+		</>
+	);
 }

@@ -1,9 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Home() {
+	const route = useRouter();
+
 	const api = {
 		key: 'e4a9403a5ec813396dbfbdefa995c411',
 		base: 'https://api.openweathermap.org/data/2.5/',
@@ -49,6 +52,10 @@ export default function Home() {
 	console.log(weather);
 	console.log('days', days);
 
+	const goDay = (date: string) => {
+		route.push(`/hourly?date=${date}`);
+	};
+
 	return (
 		<>
 			<main>
@@ -74,7 +81,7 @@ export default function Home() {
 						<div className='weather-box'>
 							<div className='temp'>
 								{days?.map((day: any, index: any) => (
-									<div key={index}>
+									<div onClick={() => goDay(day.dt)} key={index}>
 										<label>{makeDay(day.dt_txt)}</label>
 										<div className='temps'>
 											<p>Min: {Math.round(day.main.temp_min)}C</p>
@@ -93,7 +100,6 @@ export default function Home() {
 									</div>
 								))}
 							</div>
-							{/* <div className='weather'>{(weather as any).weather[0].main}</div> */}
 						</div>
 					</div>
 				) : (

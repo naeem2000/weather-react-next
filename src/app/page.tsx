@@ -1,7 +1,7 @@
 'use client';
 
 import { Weather } from '@/modules/modules';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function Home() {
 	const api = {
@@ -9,9 +9,15 @@ export default function Home() {
 		base: 'https://api.openweathermap.org/data/2.5/',
 	};
 
-	const [query, setQuery] = useState<string>('');
-	const [weather, setWeather] = useState({});
-	const [days, setDays] = useState([]);
+	const [query, setQuery] = useState('');
+	const [weather, setWeather] = useState(() => {
+		const savedWeather = localStorage.getItem('weather');
+		return savedWeather ? JSON.parse(savedWeather) : null;
+	});
+	const [days, setDays] = useState(() => {
+		const savedDays = localStorage.getItem('days');
+		return savedDays ? JSON.parse(savedDays) : [];
+	});
 
 	const search = (e: any) => {
 		if (e.key === 'Enter') {
@@ -19,8 +25,11 @@ export default function Home() {
 				.then((res) => res.json())
 				.then((result) => {
 					setWeather(result);
-					setDays(result.list.splice(0, 5));
+					const fiveDays = result.list?.slice(0, 5) || [];
+					setDays(fiveDays);
 					setQuery('');
+					localStorage.setItem('weather', JSON.stringify(result));
+					localStorage.setItem('days', JSON.stringify(fiveDays));
 				});
 		}
 	};
@@ -41,18 +50,16 @@ export default function Home() {
 						onKeyDown={search}
 					/>
 				</div>
-				{typeof (weather as any).main != 'undefined' ? (
+				{weather ? (
 					<div>
 						<div className='location-box'>
-							<div className='location'>
-								{(weather as any).name}, {(weather as any).sys.country}
-							</div>
+							<div className='location'>{(weather as any).city?.name}</div>
 						</div>
 						<div className='weather-box'>
 							<div className='temp'>
-								{Math.round((weather as any).main.temp)}°c
+								{/* {Math.round((weather as any).main.temp)}°c */}
 							</div>
-							<div className='weather'>{(weather as any).weather[0].main}</div>
+							{/* <div className='weather'>{(weather as any).weather[0].main}</div> */}
 						</div>
 					</div>
 				) : (

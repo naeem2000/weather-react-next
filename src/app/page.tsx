@@ -1,6 +1,6 @@
 'use client';
 
-import { Weather } from '@/modules/modules';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
 export default function Home() {
@@ -9,15 +9,9 @@ export default function Home() {
 		base: 'https://api.openweathermap.org/data/2.5/',
 	};
 
+	const [weather, setWeather] = useState<any>();
 	const [query, setQuery] = useState('');
-	const [weather, setWeather] = useState(() => {
-		const savedWeather = localStorage.getItem('weather');
-		return savedWeather ? JSON.parse(savedWeather) : null;
-	});
-	const [days, setDays] = useState(() => {
-		const savedDays = localStorage.getItem('days');
-		return savedDays ? JSON.parse(savedDays) : [];
-	});
+	const [days, setDays] = useState<any[]>();
 
 	const search = (e: any) => {
 		if (e.key === 'Enter') {
@@ -25,17 +19,35 @@ export default function Home() {
 				.then((res) => res.json())
 				.then((result) => {
 					setWeather(result);
-					const fiveDays = result.list?.slice(0, 5) || [];
-					setDays(fiveDays);
+					const tenDays = result.list?.filter(
+						(_: any, index: number) => (index + 1) % 8 === 0
+					);
+					setDays(tenDays);
 					setQuery('');
 					localStorage.setItem('weather', JSON.stringify(result));
-					localStorage.setItem('days', JSON.stringify(fiveDays));
+					localStorage.setItem('days', JSON.stringify(tenDays));
 				});
 		}
 	};
 
+	useEffect(() => {
+		const currentDay = localStorage.getItem('days');
+		const currentWeather = localStorage.getItem('weather');
+		if (currentDay !== null) {
+			setDays(JSON.parse(currentDay));
+		}
+		if (currentWeather !== null) {
+			setWeather(JSON.parse(currentWeather));
+		}
+	}, []);
+
+	const makeDay = (dateStr: string) => {
+		const date = new Date(dateStr);
+		return date.toLocaleDateString('en-US', { weekday: 'long' });
+	};
+
 	console.log(weather);
-	console.log(days);
+	console.log('days', days);
 
 	return (
 		<>
@@ -53,11 +65,33 @@ export default function Home() {
 				{weather ? (
 					<div>
 						<div className='location-box'>
-							<div className='location'>{(weather as any).city?.name}</div>
+							<div className='location'>
+								<h1>
+									{weather.city?.name}, {weather?.city.country}
+								</h1>
+							</div>
 						</div>
 						<div className='weather-box'>
 							<div className='temp'>
-								{/* {Math.round((weather as any).main.temp)}°c */}
+								{days?.map((day: any, index: any) => (
+									<div key={index}>
+										<label>{makeDay(day.dt_txt)}</label>
+										<div className='temps'>
+											<p>Min: {Math.round(day.main.temp_min)}C</p>
+											<p>Max: {Math.round(day.main.temp_max)}C</p>
+										</div>
+										<p>
+											Currently feels like: {Math.round(day.main.feels_like)}
+										</p>
+										<p>{day.weather[0].description}</p>
+										<Image
+											src={`https://openweathermap.org/img/w/${day.weather[0].icon}.png`}
+											height={50}
+											width={50}
+											alt={day.weather[0].description}
+										/>
+									</div>
+								))}
 							</div>
 							{/* <div className='weather'>{(weather as any).weather[0].main}</div> */}
 						</div>

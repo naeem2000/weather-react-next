@@ -42,7 +42,7 @@ export default function Page() {
 		//date and time for header
 		setDate(formatDate);
 		setTime(formatTime);
-		setWeather(JSON.parse(wholeWeather));
+		setWeather(JSON.parse(wholeWeather as string));
 		loadHourly();
 	}, []);
 	console.log(weather);

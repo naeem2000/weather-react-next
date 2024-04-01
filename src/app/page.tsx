@@ -19,12 +19,14 @@ export default function Home() {
 			);
 			const result = await response.json();
 			setWeather(result);
+			setQuery('');
 			const tenDays = result.list?.filter(
 				(_: any, index: number) => (index + 1) % 8 === 0
 			);
 			setDays(tenDays);
 			localStorage.setItem('weather', JSON.stringify(result));
 			localStorage.setItem('days', JSON.stringify(tenDays));
+			localStorage.setItem('query', query);
 		}
 	};
 
@@ -51,7 +53,7 @@ export default function Home() {
 	console.log('days', days);
 
 	const goDay = (date: string) => {
-		route.push(`/hourly?date=${date}&query=${query}`);
+		route.push(`/hourly?date=${date}`);
 	};
 
 	return (

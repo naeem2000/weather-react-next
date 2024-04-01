@@ -3,44 +3,42 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { api } from './api';
 
 export default function Home() {
 	const route = useRouter();
-
-	const api = {
-		key: 'e4a9403a5ec813396dbfbdefa995c411',
-		base: 'https://api.openweathermap.org/data/2.5/',
-	};
 
 	const [weather, setWeather] = useState<any>();
 	const [query, setQuery] = useState('');
 	const [days, setDays] = useState<any[]>();
 
-	const search = (e: any) => {
+	const search = async (e: any) => {
 		if (e.key === 'Enter') {
-			fetch(`${api.base}forecast?q=${query}&units=metric&APPID=${api.key}`)
-				.then((res) => res.json())
-				.then((result) => {
-					setWeather(result);
-					const tenDays = result.list?.filter(
-						(_: any, index: number) => (index + 1) % 8 === 0
-					);
-					setDays(tenDays);
-					setQuery('');
-					localStorage.setItem('weather', JSON.stringify(result));
-					localStorage.setItem('days', JSON.stringify(tenDays));
-				});
+			const response = await fetch(
+				`${api.base}forecast?q=${query}&units=metric&APPID=${api.key}`
+			);
+			const result = await response.json();
+			setWeather(result);
+			const tenDays = result.list?.filter(
+				(_: any, index: number) => (index + 1) % 8 === 0
+			);
+			setDays(tenDays);
+			localStorage.setItem('weather', JSON.stringify(result));
+			localStorage.setItem('days', JSON.stringify(tenDays));
 		}
 	};
 
 	useEffect(() => {
 		const currentDay = localStorage.getItem('days');
 		const currentWeather = localStorage.getItem('weather');
-		if (currentDay !== null) {
-			setDays(JSON.parse(currentDay));
-		}
-		if (currentWeather !== null) {
-			setWeather(JSON.parse(currentWeather));
+
+		if (currentDay && currentWeather) {
+			try {
+				setDays(JSON.parse(currentDay));
+				setWeather(JSON.parse(currentWeather));
+			} catch (error) {
+				console.error('no data', error);
+			}
 		}
 	}, []);
 
@@ -53,7 +51,7 @@ export default function Home() {
 	console.log('days', days);
 
 	const goDay = (date: string) => {
-		route.push(`/hourly?date=${date}`);
+		route.push(`/hourly?date=${date}&query=${query}`);
 	};
 
 	return (
@@ -69,7 +67,7 @@ export default function Home() {
 						onKeyDown={search}
 					/>
 				</div>
-				{weather ? (
+				{weather && weather.city ? (
 					<div>
 						<div className='location-box'>
 							<div className='location'>

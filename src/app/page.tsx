@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { api } from './api';
@@ -60,16 +60,14 @@ export default function Home() {
 		<>
 			<main>
 				<div className='search-box'>
-					<Suspense>
-						<input
-							type='text'
-							className='search-bar'
-							placeholder='Search...'
-							onChange={(e) => setQuery(e.target.value)}
-							value={query}
-							onKeyDown={search}
-						/>
-					</Suspense>
+					<input
+						type='text'
+						className='search-bar'
+						placeholder='Search...'
+						onChange={(e) => setQuery(e.target.value)}
+						value={query}
+						onKeyDown={search}
+					/>
 				</div>
 				{weather && weather.city ? (
 					<div>

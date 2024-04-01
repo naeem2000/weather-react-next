@@ -1,10 +1,11 @@
 'use client';
 
+import { dateAndTime } from './components/functions';
 import React, { useEffect, useState } from 'react';
 import { makeDay } from './components/functions';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { api } from './components/api';
+import Image from 'next/image';
 import './page.scss';
 
 export default function Home() {
@@ -20,46 +21,31 @@ export default function Home() {
 	const [time, setTime] = useState('');
 	const [date, setDate] = useState('');
 
+	const { formatDate, formatTime } = dateAndTime();
+
 	const route = useRouter();
 
 	useEffect(() => {
-		//store what is currently in local storage
-		const currentDay = localStorage.getItem('days');
-		const wholeWeather = localStorage.getItem('weather');
-		const currentWeather = localStorage.getItem('current');
+		// //fetch what is currently in local storage
+		// const currentDay = localStorage.getItem('days');
+		// const wholeWeather = localStorage.getItem('weather');
+		// const currentWeather = localStorage.getItem('current');
 
-		//fetching whats in local storage and updating states accordingly
-		if (currentDay && wholeWeather && currentWeather) {
-			setCurrentWeather(JSON.parse(currentWeather));
-			setDays(JSON.parse(currentDay));
-			setWeather(JSON.parse(wholeWeather));
-		}
+		// //updating states accordingly
+		// if (currentDay && wholeWeather && currentWeather) {
+		// 	setCurrentWeather(JSON.parse(currentWeather));
+		// 	setDays(JSON.parse(currentDay));
+		// 	setWeather(JSON.parse(wholeWeather));
+		// }
 
 		//date and time for header
-		const dateAndTime = () => {
-			const now = new Date();
-			const formatDate = new Intl.DateTimeFormat('en-US', {
-				weekday: 'long',
-				year: 'numeric',
-				month: 'long',
-				day: '2-digit',
-			}).format(now);
-			const formatTime = new Intl.DateTimeFormat('en-US', {
-				hour: '2-digit',
-				minute: '2-digit',
-				hour12: false,
-			}).format(now);
-
-			setTime(formatTime);
-			setDate(formatDate);
-		};
-		dateAndTime();
+		setDate(formatDate);
+		setTime(formatTime);
 	}, []);
 
 	const search = async (e: any) => {
 		//if a query has been submitted within input field
 		if (query) {
-			//if enter key has been pressed
 			//awaiting response from API
 			const response = await fetch(
 				`${api.base}forecast?q=${query}&units=metric&APPID=${api.key}`
@@ -97,7 +83,6 @@ export default function Home() {
 			console.log('please enter city');
 		}
 	};
-
 	//navigate to next page with params for fetching from respective endpoint
 	const goDay = (date: string) => {
 		route.push(`/hourly?date=${date}`);
@@ -117,7 +102,7 @@ export default function Home() {
 						<Image src={'/search.png'} width={30} height={30} alt='search' />
 						<input
 							type='text'
-							placeholder='Search your location |'
+							placeholder='Search your location'
 							onChange={(e) => setQuery(e.target.value)}
 							value={query}
 						/>

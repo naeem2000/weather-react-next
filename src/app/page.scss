@@ -16,7 +16,6 @@ main {
                 display: flex;
 
                 p {
-                    font-family: Poppins;
                     font-size: 15px;
                     font-weight: 500;
                     line-height: 22.5px;
@@ -78,20 +77,320 @@ main {
         }
     }
 
+    .temps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 150px;
+
+        .temp-left {
+            display: flex;
+            align-items: center;
+
+            p {
+                font-size: 150px;
+                font-weight: 600;
+                line-height: 225px;
+                text-align: left;
+                color: var(--white);
+            }
+
+            span {
+                font-size: 24px;
+                font-weight: 600;
+                line-height: 36px;
+                text-align: left;
+                color: var(--white);
+                text-transform: capitalize;
+
+                &:last-child {
+                    font-size: 20px;
+                    font-weight: 400;
+                    line-height: 30px;
+                    text-align: left;
+                }
+            }
+        }
+
+        .temp-right {
+            display: flex;
+            align-items: center;
+
+            img {
+                width: 188px;
+                height: 188px;
+            }
+
+            .condition-rows {
+                display: flex;
+                flex-direction: row;
+
+                div {
+
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+
+                    img {
+                        margin-top: 10px;
+                        width: 15px;
+                        height: auto;
+                        margin-right: 5px;
+
+                        &:not(:first-child) {
+                            width: 30px;
+                        }
+                    }
+
+                    &:nth-child(2) {
+                        display: flex;
+                        align-items: flex-start;
+
+                        p {
+                            margin-left: 10px;
+                            margin-top: 10px;
+                            font-size: 17px;
+                            font-weight: 400;
+                            line-height: 30px;
+                            text-align: left;
+                            color: var(--white);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     .weather {
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-top: 120px;
 
         .weather-box {
             padding: 28px 50px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            max-width: 1058px;
+            max-width: 1208px;
             width: 100%;
             border-radius: 20px;
             background: var(--weather-box-bg);
+
+            .box {
+                min-width: 200px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                cursor: pointer;
+                transition: all ease .5s;
+                padding: 20px;
+                min-height: 200px;
+                border-radius: 8px;
+
+                h2 {
+                    font-size: 20px;
+                    font-weight: 400;
+                    line-height: 30px;
+                    color: var(--white);
+                }
+
+                p {
+                    font-size: 20px;
+                    font-weight: 400;
+                    line-height: 30px;
+                    color: var(--white);
+
+                }
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    main {
+        .weather-header {
+            flex-direction: column-reverse;
+
+            .country {
+                h1 {
+                    font-size: 40px;
+                    line-height: 40px;
+                    margin-top: 70px;
+                }
+
+
+                p {
+                    font-size: 13px;
+                    line-height: 20px;
+                    margin-top: 20px;
+                }
+            }
+
+
+            .input-side {
+                width: 100%;
+
+                input {
+                    width: 100%;
+                }
+
+                button {
+                    font-size: 12px;
+                    line-height: 22.5px;
+                    padding: 13px 23px;
+                }
+            }
+        }
+
+        .temps {
+            flex-direction: row;
+            margin-top: 60px;
+
+            .temp-left {
+
+                p {
+                    font-size: 100px;
+                    line-height: 105px;
+                }
+
+                span {
+                    font-size: 20px;
+                    line-height: 20px;
+
+                    &:last-child {
+                        font-size: 17px;
+                        line-height: 20px;
+                    }
+                }
+            }
+
+            .temp-right {
+                flex-direction: row;
+
+                img {
+                    width: 150px;
+                    height: 150px;
+                }
+
+                .condition-rows {
+                    display: flex;
+                    flex-direction: row;
+
+                }
+            }
+        }
+
+        .weather {
+
+            .weather-box {
+                padding: 25px 15px;
+                overflow-x: scroll;
+
+                .box {
+                    min-width: 200px;
+                    padding: 0px;
+                    margin-right: 20px;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 550px) {
+    main {
+        .weather-header {
+            flex-direction: column-reverse;
+
+            .country {
+                h1 {
+                    font-size: 40px;
+                    line-height: 40px;
+                    margin-top: 20px;
+                }
+
+
+                p {
+                    font-size: 13px;
+                    line-height: 20px;
+                    margin-top: 20px;
+                }
+            }
+
+
+            .input-side {
+                width: 100%;
+
+                input {
+                    width: 100%;
+                }
+
+                button {
+                    font-size: 12px;
+                    line-height: 22.5px;
+                    padding: 13px 23px;
+                }
+            }
+        }
+
+        .temps {
+            flex-direction: column;
+            margin-top: 60px;
+
+            .temp-left {
+
+                p {
+                    font-size: 100px;
+                    line-height: 105px;
+                }
+
+                span {
+                    font-size: 20px;
+                    line-height: 20px;
+
+                    &:last-child {
+                        font-size: 17px;
+                        line-height: 20px;
+                    }
+                }
+            }
+
+            .temp-right {
+                flex-direction: column;
+
+                img {
+                    width: 150px;
+                    height: 150px;
+                }
+
+                .condition-rows {
+                    display: flex;
+                    flex-direction: row;
+
+                    div {
+                        margin-top: -30px;
+                    }
+                }
+            }
+        }
+
+        .weather {
+            margin-top: 60px;
+
+            .weather-box {
+                padding: 25px 15px;
+                overflow-x: scroll;
+
+                .box {
+                    min-width: 200px;
+                    padding: 0px;
+                    margin-right: 20px;
+                }
+            }
         }
     }
 }

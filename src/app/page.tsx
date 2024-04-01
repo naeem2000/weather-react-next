@@ -102,7 +102,7 @@ export default function Home() {
 	const goDay = (date: string) => {
 		route.push(`/hourly?date=${date}`);
 	};
-	console.log(weather);
+	console.log(currentWeather);
 	return (
 		<>
 			<main>
@@ -117,59 +117,83 @@ export default function Home() {
 						<Image src={'/search.png'} width={30} height={30} alt='search' />
 						<input
 							type='text'
-							placeholder='Search...'
+							placeholder='Search your location |'
 							onChange={(e) => setQuery(e.target.value)}
 							value={query}
 						/>
 						<button onClick={search}>Enter</button>
 					</div>
 				</div>
-				<div className='current-weather'>
-					{currentWeather && (
-						<div className='current-weather'>
-							<h2>Today</h2>
-							<div className='temps'>
-								<p>Current: {Math.round(currentWeather.main.temp)}</p>
-								<p>Min: {Math.round(currentWeather.main.temp_min)}</p>
-								<p>Max: {Math.round(currentWeather.main.temp_max)}</p>
+				{currentWeather && (
+					<>
+						<div className='temps'>
+							<div className='temp-left'>
+								<p>{Math.round(currentWeather.main.temp)}</p>
+								<div>
+									<span>&deg;C</span>
+									<br />
+									<span>{currentWeather.weather[0].description}</span>
+								</div>
 							</div>
-							<div className='description'>
-								<p>{currentWeather.weather[0].description}</p>
+							<div className='temp-right'>
+								<Image
+									src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`}
+									height={50}
+									width={50}
+									alt={currentWeather.weather[0].description}
+								/>
+								<div className='condition-rows'>
+									<div>
+										<Image
+											src={'/feels.png'}
+											width={20}
+											height={20}
+											alt='feels like'
+										/>
+										<Image
+											src={'/humid.png'}
+											width={20}
+											height={20}
+											alt='humidity'
+										/>
+										<Image
+											src={'/wind.png'}
+											width={20}
+											height={20}
+											alt='wind'
+										/>
+									</div>
+									<div>
+										<p>
+											Feels like: {Math.round(currentWeather.main.feels_like)}
+											&deg;C
+										</p>
+										<p>Humidity: {Math.round(currentWeather.main.humidity)}%</p>
+										<p>Wind: {Math.round(currentWeather.wind.speed)}km/h</p>
+									</div>
+								</div>
 							</div>
-							<Image
-								src={`https://openweathermap.org/img/w/${currentWeather.weather[0].icon}.png`}
-								height={50}
-								width={50}
-								alt={currentWeather.weather[0].description}
-							/>
 						</div>
-					)}
-				</div>
+					</>
+				)}
+
 				{weather && weather.city ? (
 					<div className='weather'>
 						<div className='weather-box'>
 							{days?.map((day: any, index: any) => (
 								<div className='box' onClick={() => goDay(day.dt)} key={index}>
-									<div>
-										<h2>{makeDay(day.dt_txt)}</h2>
-										<div className='temps'>
-											<p className={day.main.temp_min < 16 ? 'blue' : 'orange'}>
-												Min: {Math.round(day.main.temp_min)}&deg;C
-											</p>
-											<p className={day.main.temp_min > 16 ? 'orange' : 'blue'}>
-												Max: {Math.round(day.main.temp_max)}&deg;C
-											</p>
-										</div>
-										<div className='description'>
-											<p>{day.weather[0].description}</p>
-										</div>
-									</div>
+									<h2>{makeDay(day.dt_txt)}</h2>
 									<Image
-										src={`https://openweathermap.org/img/w/${day.weather[0].icon}.png`}
-										height={50}
-										width={50}
+										src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
+										height={90}
+										width={90}
 										alt={day.weather[0].description}
 									/>
+									<p>
+										{Math.round(day.main.temp_min)}&deg; -{' '}
+										{Math.round(day.main.temp_max)}&deg;
+									</p>
+									<p>{day.weather[0].description}</p>
 								</div>
 							))}
 						</div>

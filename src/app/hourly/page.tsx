@@ -1,19 +1,27 @@
 'use client';
 
+import { splitDate } from '../components/functions';
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { api } from '../components/api';
 import Image from 'next/image';
-import { api } from '../api';
 
 export default function Page() {
 	const [hourly, setHourly] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 
-	const searchParams = useSearchParams();
+	const route = useRouter();
 
 	useEffect(() => {
+		const currentDay = localStorage.getItem('days');
+		const currentWeather = localStorage.getItem('weather');
+		if (!currentDay && !currentWeather) {
+			route.push('/');
+		}
 		const loadHourly = async () => {
-			const date = searchParams.get('date');
+			const params = new URLSearchParams(window.location.search);
+			const date = params.get('date');
+
 			const location = localStorage.getItem('query');
 
 			if (!date || !location) return;
@@ -26,16 +34,7 @@ export default function Page() {
 		};
 
 		loadHourly();
-	}, [searchParams]);
-
-	const splitDate = (resDate: string) => {
-		const dateParts = resDate.split(' ');
-		const date = dateParts[0];
-		const time = dateParts[1];
-		const [year, month, day] = date.split('-');
-		const [hour, minute, second] = time.split(':');
-		return { year, month, day, hour, minute, second };
-	};
+	}, []);
 
 	return (
 		<main>

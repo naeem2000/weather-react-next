@@ -21,9 +21,7 @@ export default function Page() {
 		const loadHourly = async () => {
 			const params = new URLSearchParams(window.location.search);
 			const date = params.get('date');
-
 			const location = localStorage.getItem('query');
-
 			if (!date || !location) return;
 			const response = await fetch(
 				`${api.base}forecast?q=${location}&units=metric&APPID=${api.key}&date=${date}`

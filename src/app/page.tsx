@@ -20,74 +20,85 @@ export default function Home() {
 	//state for date and time
 	const [time, setTime] = useState('');
 	const [date, setDate] = useState('');
+	//error for empty input
+	const [error, setError] = useState<boolean>(false);
 
 	const { formatDate, formatTime } = dateAndTime();
 
 	const route = useRouter();
 
 	useEffect(() => {
-		// //fetch what is currently in local storage
-		// const currentDay = localStorage.getItem('days');
-		// const wholeWeather = localStorage.getItem('weather');
-		// const currentWeather = localStorage.getItem('current');
+		//fetch what is currently in local storage
+		const currentDay = localStorage.getItem('days');
+		const wholeWeather = localStorage.getItem('weather');
+		const currentWeather = localStorage.getItem('currentDayWeather');
 
-		// //updating states accordingly
-		// if (currentDay && wholeWeather && currentWeather) {
-		// 	setCurrentWeather(JSON.parse(currentWeather));
-		// 	setDays(JSON.parse(currentDay));
-		// 	setWeather(JSON.parse(wholeWeather));
-		// }
+		//updating states accordingly on page load
+		if (currentDay && wholeWeather && currentWeather) {
+			setCurrentWeather(JSON.parse(currentWeather));
+			setDays(JSON.parse(currentDay));
+			setWeather(JSON.parse(wholeWeather));
+		}
 
-		//date and time for header
+		//date and time for header on page load
 		setDate(formatDate);
 		setTime(formatTime);
 	}, []);
 
 	const search = async (e: any) => {
-		//if a query has been submitted within input field
-		if (query) {
-			//awaiting response from API
-			const response = await fetch(
-				`${api.base}forecast?q=${query}&units=metric&APPID=${api.key}`
-			);
+		try {
+			//if a query has been submitted within input field
+			if (query) {
+				//awaiting response from API
+				const response = await fetch(
+					`${api.base}forecast?q=${query}&units=metric&APPID=${api.key}`
+				);
 
-			//awaiting response from API to parse into JSON
-			const result = await response.json();
+				//awaiting response from API to parse into JSON
+				const result = await response.json();
 
-			//awaiting response from current weather endpoint
-			const currentResponse = await fetch(
-				`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`
-			);
+				//awaiting response from current weather endpoint
+				const currentResponse = await fetch(
+					`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`
+				);
 
-			//awaiting response from current weather endpoint to parse into JSON
-			const currentResult = await currentResponse.json();
+				//awaiting response from current weather endpoint to parse into JSON
+				const currentResult = await currentResponse.json();
 
-			//updating states after asynchronous steps
-			setCurrentWeather(currentResult);
-			setWeather(result);
-			setQuery('');
+				//updating states after asynchronous steps
+				setCurrentWeather(currentResult);
+				setWeather(result);
+				setQuery('');
 
-			//filtering that only 1 array be taken for every 10 as the resonse returns 40 arrays containing the same day.
-			const tenDays = result.list?.filter(
-				(_: any, index: number) => (index + 1) % 8 === 0
-			);
+				//filtering that only 1 array be taken for every 10 as the resonse returns 40 arrays containing the same day.
+				const tenDays = result.list?.filter(
+					(_: any, index: number) => (index + 1) % 8 === 0
+				);
 
-			//updating state after filtering for days state and updating local storage
-			setDays(tenDays);
-			localStorage.setItem('weather', JSON.stringify(result));
-			localStorage.setItem('days', JSON.stringify(tenDays));
-			localStorage.setItem('query', query);
-			localStorage.setItem('current', JSON.stringify(currentWeather));
-		} else {
-			//error if input is empty
-			console.log('please enter city');
+				//updating state after filtering for days state and updating local storage
+				setDays(tenDays);
+				localStorage.setItem('weather', JSON.stringify(result));
+				localStorage.setItem('days', JSON.stringify(tenDays));
+				localStorage.setItem('query', query);
+				localStorage.setItem(
+					'currentDayWeather',
+					JSON.stringify(currentResult)
+				);
+			} else {
+				//error if input is empty
+				setError(true);
+				setTimeout(() => setError(false), 2000);
+			}
+		} catch (e) {
+			console.log('error fetching data', e);
 		}
 	};
+
 	//navigate to next page with params for fetching from respective endpoint
 	const goDay = (date: string) => {
 		route.push(`/hourly?date=${date}`);
 	};
-	console.log(currentWeather);
+
 	return (
 		<>
 			<main>
@@ -102,9 +113,12 @@ export default function Home() {
 						<Image src={'/search.png'} width={30} height={30} alt='search' />
 						<input
 							type='text'
-							placeholder='Search your location'
+							placeholder={
+								!error ? 'Search your location' : 'Please enter a location...'
+							}
 							onChange={(e) => setQuery(e.target.value)}
 							value={query}
+							className={error ? 'input-error' : ''}
 						/>
 						<button onClick={search}>Enter</button>
 					</div>
@@ -184,7 +198,7 @@ export default function Home() {
 						</div>
 					</div>
 				) : (
-					'No city selected'
+					<h1 className='no-city'>No location selected</h1>
 				)}
 			</main>
 		</>

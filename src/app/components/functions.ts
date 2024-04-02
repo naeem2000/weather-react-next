@@ -1,3 +1,4 @@
+//function to seperate date and time
 export const splitDate = (resDate: string) => {
 	const dateParts = resDate.split(' ');
 	const date = dateParts[0];
@@ -7,11 +8,13 @@ export const splitDate = (resDate: string) => {
 	return { year, month, day, hour, minute, second };
 };
 
+//format calendar date and month to text
 export const makeDay = (dateStr: string) => {
 	const date = new Date(dateStr);
 	return date.toLocaleDateString('en-US', { weekday: 'long' });
 };
 
+//current time formatted according to design
 export const dateAndTime = () => {
 	const now = new Date();
 	const formatDate = new Intl.DateTimeFormat('en-US', {

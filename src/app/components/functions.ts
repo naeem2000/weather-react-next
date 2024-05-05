@@ -1,3 +1,11 @@
+import { useState } from 'react';
+
+//state for loader
+export const loader = () => {
+	const [load, setLoad] = useState<boolean>(true);
+	return { load, setLoad };
+};
+
 //function to seperate date and time
 export const splitDate = (resDate: string) => {
 	const dateParts = resDate.split(' ');

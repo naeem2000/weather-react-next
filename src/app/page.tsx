@@ -1,8 +1,7 @@
 'use client';
 
-import { dateAndTime } from './components/functions';
+import { dateAndTime, loader, makeDay } from './components/functions';
 import React, { useEffect, useState } from 'react';
-import { makeDay } from './components/functions';
 import { useRouter } from 'next/navigation';
 import { api } from './components/api';
 import Image from 'next/image';
@@ -23,27 +22,54 @@ export default function Home() {
 	//error for empty input
 	const [error, setError] = useState<boolean>(false);
 
+	//loader for page
+	const { load, setLoad } = loader();
+
 	const { formatDate, formatTime } = dateAndTime();
 
 	const route = useRouter();
 
 	useEffect(() => {
-		//fetch what is currently in local storage
+		// Fetch what is currently in local storage
 		const currentDay = localStorage.getItem('days');
 		const wholeWeather = localStorage.getItem('weather');
 		const currentWeather = localStorage.getItem('currentDayWeather');
 
-		//updating states accordingly on page load
+		// Check if data exists in local storage and is valid JSON
 		if (currentDay && wholeWeather && currentWeather) {
-			setCurrentWeather(JSON.parse(currentWeather));
-			setDays(JSON.parse(currentDay));
-			setWeather(JSON.parse(wholeWeather));
+			try {
+				const parsedCurrentDay = JSON.parse(currentDay);
+				const parsedWholeWeather = JSON.parse(wholeWeather);
+				const parsedCurrentWeather = JSON.parse(currentWeather);
+
+				// Update states accordingly
+				setCurrentWeather(parsedCurrentWeather);
+				setDays(parsedCurrentDay);
+				setWeather(parsedWholeWeather);
+			} catch (error) {
+				// Handle JSON parsing errors
+				console.error('Error parsing JSON:', error);
+				setCurrentWeather(undefined);
+				setDays(undefined);
+				setWeather(undefined);
+			}
+			setLoad(false);
+		} else {
+			// Handle cases where data doesn't exist in local storage
+			setCurrentWeather(undefined);
+			setDays(undefined);
+			setWeather(undefined);
+			setLoad(false);
 		}
 
 		//date and time for header on page load
 		setDate(formatDate);
 		setTime(formatTime);
+		//loader
+		setLoad(false);
 	}, []);
+
+	console.log(load);
 
 	const search = async (e: any) => {
 		try {
@@ -84,14 +110,20 @@ export default function Home() {
 					'currentDayWeather',
 					JSON.stringify(currentResult)
 				);
+				//loader
+				setLoad(false);
 			} else {
 				//error if input is empty
 				setError(true);
 				setTimeout(() => setError(false), 2000);
+				//loader
+				setLoad(false);
 			}
+			console.log('UNload');
 		} catch (e) {
 			console.log('error fetching data', e);
 		}
+		setLoad(false);
 	};
 
 	//navigate to next page with params for fetching from respective endpoint

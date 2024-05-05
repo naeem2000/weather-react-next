@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 //state for loader
 export const loader = () => {
-	const [load, setLoad] = useState<boolean>(true);
+	const [load, setLoad] = useState<boolean>(false);
 	return { load, setLoad };
 };
 

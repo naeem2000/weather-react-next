@@ -26,6 +26,7 @@ export default function Home() {
 	//loader for page
 	const { load, setLoad } = loader();
 
+	//time formatter function
 	const { formatDate, formatTime } = dateAndTime();
 
 	const route = useRouter();

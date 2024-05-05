@@ -3,6 +3,7 @@
 import { dateAndTime, loader, makeDay } from './components/functions';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Loader from './components/Loader';
 import { api } from './components/api';
 import Image from 'next/image';
 import './page.scss';
@@ -53,20 +54,20 @@ export default function Home() {
 				setDays(undefined);
 				setWeather(undefined);
 			}
-			setLoad(false);
+			// setLoad(false);
 		} else {
 			// Handle cases where data doesn't exist in local storage
 			setCurrentWeather(undefined);
 			setDays(undefined);
 			setWeather(undefined);
-			setLoad(false);
+			// setLoad(false);
 		}
 
 		//date and time for header on page load
 		setDate(formatDate);
 		setTime(formatTime);
 		//loader
-		setLoad(false);
+		// setLoad(false);
 	}, []);
 
 	console.log(load);
@@ -117,13 +118,13 @@ export default function Home() {
 				setError(true);
 				setTimeout(() => setError(false), 2000);
 				//loader
-				setLoad(false);
+				// setLoad(false);
 			}
 			console.log('UNload');
 		} catch (e) {
 			console.log('error fetching data', e);
 		}
-		setLoad(false);
+		// setLoad(false);
 	};
 
 	//navigate to next page with params for fetching from respective endpoint
@@ -134,103 +135,123 @@ export default function Home() {
 	return (
 		<>
 			<main>
-				<div className='weather-header'>
-					<div className='country'>
-						{weather && <h1>{weather.city.name}</h1>}
-						<p>
-							{date} &nbsp; | &nbsp; {time}
-						</p>
-					</div>
-					<div className='input-side'>
-						<Image src={'/search.png'} width={30} height={30} alt='search' />
-						<input
-							type='text'
-							placeholder={
-								!error ? 'Search your location' : 'Please enter a location...'
-							}
-							onChange={(e) => setQuery(e.target.value)}
-							value={query}
-							className={error ? 'input-error' : ''}
-						/>
-						<button onClick={search}>Enter</button>
-					</div>
-				</div>
-				{currentWeather && (
-					<>
-						<div className='temps'>
-							<div className='temp-left'>
-								<p>{Math.round(currentWeather.main.temp)}</p>
-								<div>
-									<span>&deg;C</span>
-									<br />
-									<span>{currentWeather.weather[0].description}</span>
-								</div>
-							</div>
-							<div className='temp-right'>
-								<Image
-									src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`}
-									height={50}
-									width={50}
-									alt={currentWeather.weather[0].description}
-								/>
-								<div className='condition-rows'>
-									<div>
-										<Image
-											src={'/feels.png'}
-											width={20}
-											height={20}
-											alt='feels like'
-										/>
-										<Image
-											src={'/humid.png'}
-											width={20}
-											height={20}
-											alt='humidity'
-										/>
-										<Image
-											src={'/wind.png'}
-											width={20}
-											height={20}
-											alt='wind'
-										/>
-									</div>
-									<div>
-										<p>
-											Feels like: {Math.round(currentWeather.main.feels_like)}
-											&deg;C
-										</p>
-										<p>Humidity: {Math.round(currentWeather.main.humidity)}%</p>
-										<p>Wind: {Math.round(currentWeather.wind.speed)}km/h</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</>
-				)}
-
-				{weather && weather.city ? (
-					<div className='weather'>
-						<div className='weather-box'>
-							{days?.map((day: any, index: any) => (
-								<div className='box' onClick={() => goDay(day.dt)} key={index}>
-									<h2>{makeDay(day.dt_txt)}</h2>
-									<Image
-										src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
-										height={90}
-										width={90}
-										alt={day.weather[0].description}
-									/>
-									<p>
-										{Math.round(day.main.temp_min)}&deg; -{' '}
-										{Math.round(day.main.temp_max)}&deg;
-									</p>
-									<p>{day.weather[0].description}</p>
-								</div>
-							))}
-						</div>
-					</div>
+				{load ? (
+					<Loader />
 				) : (
-					<h1 className='no-city'>No location selected</h1>
+					<>
+						{' '}
+						<div className='weather-header'>
+							<div className='country'>
+								{weather && <h1>{weather.city.name}</h1>}
+								<p>
+									{date} &nbsp; | &nbsp; {time}
+								</p>
+							</div>
+							<div className='input-side'>
+								<Image
+									src={'/search.png'}
+									width={30}
+									height={30}
+									alt='search'
+								/>
+								<input
+									type='text'
+									placeholder={
+										!error
+											? 'Search your location'
+											: 'Please enter a location...'
+									}
+									onChange={(e) => setQuery(e.target.value)}
+									value={query}
+									className={error ? 'input-error' : ''}
+								/>
+								<button onClick={search}>Enter</button>
+							</div>
+						</div>
+						{currentWeather && (
+							<>
+								<div className='temps'>
+									<div className='temp-left'>
+										<p>{Math.round(currentWeather.main.temp)}</p>
+										<div>
+											<span>&deg;C</span>
+											<br />
+											<span>{currentWeather.weather[0].description}</span>
+										</div>
+									</div>
+									<div className='temp-right'>
+										<Image
+											src={`https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`}
+											height={50}
+											width={50}
+											alt={currentWeather.weather[0].description}
+										/>
+										<div className='condition-rows'>
+											<div>
+												<Image
+													src={'/feels.png'}
+													width={20}
+													height={20}
+													alt='feels like'
+												/>
+												<Image
+													src={'/humid.png'}
+													width={20}
+													height={20}
+													alt='humidity'
+												/>
+												<Image
+													src={'/wind.png'}
+													width={20}
+													height={20}
+													alt='wind'
+												/>
+											</div>
+											<div>
+												<p>
+													Feels like:{' '}
+													{Math.round(currentWeather.main.feels_like)}
+													&deg;C
+												</p>
+												<p>
+													Humidity: {Math.round(currentWeather.main.humidity)}%
+												</p>
+												<p>Wind: {Math.round(currentWeather.wind.speed)}km/h</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</>
+						)}
+						{weather && weather.city ? (
+							<div className='weather'>
+								<div className='weather-box'>
+									{days?.map((day: any, index: any) => (
+										<div
+											className='box'
+											onClick={() => goDay(day.dt)}
+											key={index}
+										>
+											<h2>{makeDay(day.dt_txt)}</h2>
+											<Image
+												src={`https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
+												height={90}
+												width={90}
+												alt={day.weather[0].description}
+											/>
+											<p>
+												{Math.round(day.main.temp_min)}&deg; -{' '}
+												{Math.round(day.main.temp_max)}&deg;
+											</p>
+											<p>{day.weather[0].description}</p>
+										</div>
+									))}
+								</div>
+							</div>
+						) : (
+							<h1 className='no-city'>No location selected</h1>
+						)}
+					</>
 				)}
 			</main>
 		</>

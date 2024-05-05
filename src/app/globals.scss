@@ -26,6 +26,21 @@ main {
   padding: 80px;
 }
 
+.loader {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.loader .lottie {}
+
+path {
+  border-radius: 500px;
+}
+
+.loader .lottie rect {
+  fill: none !important;
+}
+
 @media screen and (max-width: 820px) {
   body {
     height: 100%;

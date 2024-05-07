@@ -6,6 +6,7 @@ export default function Loader() {
 	return (
 		<div className='loader'>
 			<Lottie className='lottie' animationData={loaderAnimation} loop={true} />
+			<h1>Loading...</h1>
 		</div>
 	);
 }

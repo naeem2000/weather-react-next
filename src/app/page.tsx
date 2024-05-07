@@ -55,25 +55,25 @@ export default function Home() {
 				setDays(undefined);
 				setWeather(undefined);
 			}
-			// setLoad(false);
 		} else {
 			// Handle cases where data doesn't exist in local storage
 			setCurrentWeather(undefined);
 			setDays(undefined);
 			setWeather(undefined);
-			// setLoad(false);
 		}
 
 		//date and time for header on page load
 		setDate(formatDate);
 		setTime(formatTime);
+
 		//loader
-		// setLoad(false);
+		setTimeout(() => {
+			setLoad(false);
+		}, 2000);
 	}, []);
 
-	console.log(load);
-
 	const search = async (e: any) => {
+		setLoad(true);
 		try {
 			//if a query has been submitted within input field
 			if (query) {
@@ -112,20 +112,22 @@ export default function Home() {
 					'currentDayWeather',
 					JSON.stringify(currentResult)
 				);
+
 				//loader
-				setLoad(false);
+				setTimeout(() => {
+					setLoad(false);
+				}, 1000);
 			} else {
 				//error if input is empty
 				setError(true);
 				setTimeout(() => setError(false), 2000);
-				//loader
-				// setLoad(false);
+				setTimeout(() => {
+					setLoad(false);
+				}, 500);
 			}
-			console.log('UNload');
 		} catch (e) {
 			console.log('error fetching data', e);
 		}
-		// setLoad(false);
 	};
 
 	//navigate to next page with params for fetching from respective endpoint

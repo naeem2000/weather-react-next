@@ -22,6 +22,22 @@ body {
   background-attachment: fixed;
 }
 
+.cold {
+  background-image: url('/cold.jpg');
+  background-position: 100% 10%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.cold-text {
+  color: rgb(147, 228, 255) !important;
+}
+
+.warm-text {
+  color: rgb(255, 155, 25) !important;
+}
+
 main {
   padding: 80px;
 }

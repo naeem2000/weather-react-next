@@ -27,7 +27,7 @@ export default function Home() {
 	const { load, setLoad } = loader();
 
 	//time formatter function
-	const { formatDate, formatTime } = dateAndTime();
+	let { formatDate } = dateAndTime();
 
 	const route = useRouter();
 
@@ -64,7 +64,6 @@ export default function Home() {
 
 		//date and time for header on page load
 		setDate(formatDate);
-		setTime(formatTime);
 
 		//loader
 		setTimeout(() => {
@@ -130,10 +129,30 @@ export default function Home() {
 		}
 	};
 
+	setInterval(() => {
+		//adding new variable to format time with updated time
+		const { formatTime: updatedTime } = dateAndTime();
+		//updating state with updated time every 1000 ms
+		setTime(updatedTime);
+	}, 1000);
+
 	//navigate to next page with params for fetching from respective endpoint
 	const goDay = (date: string) => {
 		route.push(`/hourly?date=${date}`);
 	};
+
+	useEffect(() => {
+		if (currentWeather && weather?.message !== 'city not found') {
+			// Check if currentWeather is not null or undefined
+			if (currentWeather.main.temp < 16) {
+				//add cold class
+				document.body.classList.add('cold');
+			} else {
+				//remove cold class
+				document.body.classList.remove('cold');
+			}
+		}
+	}, [currentWeather]);
 
 	return (
 		<>
@@ -180,7 +199,19 @@ export default function Home() {
 									<>
 										<div className='temps'>
 											<div className='temp-left'>
-												<p>{Math.round(currentWeather.main.temp)}</p>
+												<p
+													className={
+														currentWeather && currentWeather.main.temp < 16
+															? 'cold-text'
+															: '' ||
+															  (currentWeather &&
+																	currentWeather.main.temp > 30)
+															? 'warm-text'
+															: ''
+													}
+												>
+													{Math.round(currentWeather.main.temp)}
+												</p>
 												<div>
 													<span>&deg;C</span>
 													<br />

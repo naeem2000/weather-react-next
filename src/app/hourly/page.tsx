@@ -1,12 +1,13 @@
 'use client';
 
-import { dateAndTime, splitDate } from '../components/functions';
+import { dateAndTime, loader, splitDate } from '../components/functions';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Loader from '../components/Loader';
 import { api } from '../components/api';
 import Image from 'next/image';
-import '../page.scss';
 import './hourly.scss';
+import '../page.scss';
 
 export default function Page() {
 	//state for hourly weather
@@ -23,7 +24,9 @@ export default function Page() {
 
 	const route = useRouter();
 
-	const { formatDate, formatTime } = dateAndTime();
+	const { load, setLoad } = loader();
+
+	const { formatDate } = dateAndTime();
 
 	useEffect(() => {
 		//fetch what is currently in local storage
@@ -53,96 +56,120 @@ export default function Page() {
 			};
 			//date and time for header
 			setDate(formatDate);
-			setTime(formatTime);
 			setWeather(JSON.parse(wholeWeather as string));
 			loadHourly();
 		} catch (e) {
 			console.log('error fetching data', e);
 		}
+		//loader
+		setTimeout(() => {
+			setLoad(false);
+		}, 2000);
 	}, []);
+
+	setInterval(() => {
+		//adding new variable to format time with updated time
+		const { formatTime: updatedTime } = dateAndTime();
+		//updating state with updated time every 1000 ms
+		setTime(updatedTime);
+	}, 1000);
 
 	console.log(hourly);
 
 	return (
 		<main>
-			<div className='weather-header'>
-				<div className='country'>
-					<h1>{area}</h1>
-					<p>
-						{date} &nbsp; | &nbsp; {time}
-					</p>
-				</div>
-			</div>
-			{weather && (
-				<>
-					<div className='temps'>
-						<div className='temp-left'>
-							<p>{Math.round(weather.list[0].main.temp)}</p>
-							<div>
-								<span>&deg;C</span>
-								<br />
-								<span>{weather.list[0].main.description}</span>
-							</div>
-						</div>
-						<div className='temp-right'>
-							<Image
-								src={`https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}@2x.png`}
-								height={50}
-								width={50}
-								alt='current'
-							/>
-							<div className='condition-rows'>
-								<div>
-									<Image
-										src={'/feels.png'}
-										width={20}
-										height={20}
-										alt='feels like'
-									/>
-									<Image
-										src={'/humid.png'}
-										width={20}
-										height={20}
-										alt='humidity'
-									/>
-									<Image src={'/wind.png'} width={20} height={20} alt='wind' />
-								</div>
-								<div>
-									<p>
-										Feels like: {Math.round(weather.list[0].main.feels_like)}
-										&deg;C
-									</p>
-									<p>Humidity: {Math.round(weather.list[0].main.humidity)}%</p>
-									<p>Wind: {Math.round(weather.list[0].wind.speed)}km/h</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</>
-			)}
-			{loading ? (
-				<p>Loading...</p>
+			{load ? (
+				<Loader />
 			) : (
-				<div className='hourly-box'>
-					<h2>Hourly Forecast</h2>
-					<div className='hourly'>
-						{hourly.map((item, index) => (
-							<div className='hourly-item' key={index}>
-								<p>{` ${splitDate(item.dt_txt).hour}:${
-									splitDate(item.dt_txt).minute
-								}`}</p>
-								<Image
-									src={`https://openweathermap.org/img/w/${item.weather[0].icon}.png`}
-									height={50}
-									width={50}
-									alt={item.weather[0].description}
-								/>
-								<p>{Math.round(item.main.temp)}&deg;C</p>
-								<p>{item.weather[0].description}</p>
-							</div>
-						))}
+				<>
+					<div className='weather-header'>
+						<div className='country'>
+							<h1>{area}</h1>
+							<p>
+								{date} &nbsp; | &nbsp; {time}
+							</p>
+						</div>
 					</div>
-				</div>
+					{weather && (
+						<>
+							<div className='temps'>
+								<div className='temp-left'>
+									<p>{Math.round(weather.list[0].main.temp)}</p>
+									<div>
+										<span>&deg;C</span>
+										<br />
+										<span>{weather.list[0].main.description}</span>
+									</div>
+								</div>
+								<div className='temp-right'>
+									<Image
+										src={`https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}@2x.png`}
+										height={50}
+										width={50}
+										alt='current'
+									/>
+									<div className='condition-rows'>
+										<div>
+											<Image
+												src={'/feels.png'}
+												width={20}
+												height={20}
+												alt='feels like'
+											/>
+											<Image
+												src={'/humid.png'}
+												width={20}
+												height={20}
+												alt='humidity'
+											/>
+											<Image
+												src={'/wind.png'}
+												width={20}
+												height={20}
+												alt='wind'
+											/>
+										</div>
+										<div>
+											<p>
+												Feels like:{' '}
+												{Math.round(weather.list[0].main.feels_like)}
+												&deg;C
+											</p>
+											<p>
+												Humidity: {Math.round(weather.list[0].main.humidity)}%
+											</p>
+											<p>Wind: {Math.round(weather.list[0].wind.speed)}km/h</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</>
+					)}
+					{loading ? (
+						<p>Loading...</p>
+					) : (
+						<div className='hourly-box'>
+							<h2>Hourly Forecast</h2>
+							<div className='hourly'>
+								{hourly.map((item, index) => (
+									<div className='hourly-item' key={index}>
+										<p>{` ${splitDate(item.dt_txt).hour}:${
+											splitDate(item.dt_txt).minute
+										}`}</p>
+										<Image
+											src={`https://openweathermap.org/img/w/${item.weather[0].icon}.png`}
+											height={50}
+											width={50}
+											alt={item.weather[0].description}
+										/>
+										<p>{Math.round(item.main.temp)}&deg;C</p>
+										<p>{item.weather[0].description}</p>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+				</>
 			)}
 		</main>
 	);

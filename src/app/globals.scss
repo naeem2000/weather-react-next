@@ -22,8 +22,43 @@ body {
   background-attachment: fixed;
 }
 
+.cold {
+  background-image: url('/cold.jpg');
+  background-position: 100% 10%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.cold-text {
+  color: rgb(147, 228, 255) !important;
+}
+
+.warm-text {
+  color: rgb(255, 155, 25) !important;
+}
+
 main {
   padding: 80px;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 70vh;
+}
+
+.loader .lottie {
+  max-width: 250px;
+  width: 100%;
+  height: auto;
+}
+
+.loader h1 {
+  color: var(--white);
+  font-size: 35px;
 }
 
 @media screen and (max-width: 820px) {
@@ -34,5 +69,13 @@ main {
   main {
     height: 100%;
     padding: 20px;
+  }
+
+  .loader .lottie {
+    width: 40%;
+  }
+
+  .loader h1 {
+    font-size: 20px;
   }
 }

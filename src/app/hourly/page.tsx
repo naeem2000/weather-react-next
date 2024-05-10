@@ -8,14 +8,15 @@ import { api } from '../components/api';
 import Image from 'next/image';
 import './hourly.scss';
 import '../page.scss';
+import { HourlyWeather } from '@/modules/modules';
 
 export default function Page() {
 	//state for hourly weather
 	const [hourly, setHourly] = useState<any[]>([]);
 	//loading state
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState<boolean>(true);
 	//weather state before filtering
-	const [weather, setWeather] = useState<any>();
+	const [weather, setWeather] = useState<HourlyWeather>();
 	//current location state
 	const [area, setArea] = useState<string>('');
 	//state for date and time
@@ -27,6 +28,8 @@ export default function Page() {
 	const { load, setLoad } = loader();
 
 	const { formatDate } = dateAndTime();
+
+	console.log('hourly', hourly);
 
 	useEffect(() => {
 		//fetch what is currently in local storage
@@ -74,8 +77,6 @@ export default function Page() {
 		setTime(updatedTime);
 	}, 1000);
 
-	console.log(hourly);
-
 	return (
 		<main>
 			{load ? (
@@ -94,11 +95,21 @@ export default function Page() {
 						<>
 							<div className='temps'>
 								<div className='temp-left'>
-									<p>{Math.round(weather.list[0].main.temp)}</p>
+									<p
+										className={
+											weather && weather.list[0].main.temp < 16
+												? 'cold-text'
+												: '' || (weather && weather.list[0].main.temp > 27)
+												? 'warm-text'
+												: ''
+										}
+									>
+										{Math.round(weather.list[0].main.temp)}
+									</p>
 									<div>
 										<span>&deg;C</span>
 										<br />
-										<span>{weather.list[0].main.description}</span>
+										<span>{weather.list[0].weather[0].description}</span>
 									</div>
 								</div>
 								<div className='temp-right'>

@@ -1,6 +1,7 @@
 'use client';
 
 import { dateAndTime, loader, makeDay } from './components/functions';
+import { CurrentWeather, days, Weather } from '@/modules/modules';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loader from './components/Loader';
@@ -10,16 +11,16 @@ import './page.scss';
 
 export default function Home() {
 	//state for weather
-	const [weather, setWeather] = useState<any>();
+	const [weather, setWeather] = useState<Weather>();
 	//state for forecast array from weather
-	const [days, setDays] = useState<any[]>();
+	const [days, setDays] = useState<days[]>();
 	//state for current weather
-	const [currentWeather, setCurrentWeather] = useState<any>();
+	const [currentWeather, setCurrentWeather] = useState<CurrentWeather>();
 	//state for query from input
 	const [query, setQuery] = useState<string>('');
 	//state for date and time
-	const [time, setTime] = useState('');
-	const [date, setDate] = useState('');
+	const [time, setTime] = useState<string>('');
+	const [date, setDate] = useState<string>('');
 	//error for empty input
 	const [error, setError] = useState<boolean>(false);
 
@@ -142,14 +143,17 @@ export default function Home() {
 	};
 
 	useEffect(() => {
-		if (currentWeather && weather?.message !== 'city not found') {
+		if (
+			currentWeather &&
+			(weather?.message as unknown as string) !== 'city not found'
+		) {
 			// Check if currentWeather is not null or undefined
-			if (currentWeather.main.temp < 16) {
+			if (currentWeather.main.temp > 16) {
 				//add cold class
-				document.body.classList.add('cold');
+				document.body.classList.remove('cold');
 			} else {
 				//remove cold class
-				document.body.classList.remove('cold');
+				document.body.classList.add('cold');
 			}
 		}
 	}, [currentWeather]);
@@ -163,7 +167,8 @@ export default function Home() {
 					<>
 						<div className='weather-header'>
 							<div className='country'>
-								{weather?.message !== 'city not found' && (
+								{(weather?.message as unknown as string) !==
+									'city not found' && (
 									<>{weather && <h1>{weather.city.name}</h1>}</>
 								)}
 								<p>
@@ -191,7 +196,7 @@ export default function Home() {
 								<button onClick={search}>Enter</button>
 							</div>
 						</div>
-						{weather?.message === 'city not found' ? (
+						{(weather?.message as unknown as string) === 'city not found' ? (
 							<h1 className='no-city'>Location not found</h1>
 						) : (
 							<>
@@ -205,7 +210,7 @@ export default function Home() {
 															? 'cold-text'
 															: '' ||
 															  (currentWeather &&
-																	currentWeather.main.temp > 30)
+																	currentWeather.main.temp > 27)
 															? 'warm-text'
 															: ''
 													}

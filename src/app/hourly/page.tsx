@@ -1,6 +1,7 @@
 'use client';
 
 import { dateAndTime, loader, splitDate } from '../components/functions';
+import { Hourly, HourlyWeather } from '@/modules/modules';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loader from '../components/Loader';
@@ -8,11 +9,10 @@ import { api } from '../components/api';
 import Image from 'next/image';
 import './hourly.scss';
 import '../page.scss';
-import { HourlyWeather } from '@/modules/modules';
 
 export default function Page() {
 	//state for hourly weather
-	const [hourly, setHourly] = useState<any[]>([]);
+	const [hourly, setHourly] = useState<Hourly[]>([]);
 	//loading state
 	const [loading, setLoading] = useState<boolean>(true);
 	//weather state before filtering

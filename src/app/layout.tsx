@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import './globals.scss';
 
 export const metadata: Metadata = {
-	title: 'Weather Next App',
+	title: 'Forecast Hub',
 	description: 'Developed with React.JS and Next.JS',
 };
 
